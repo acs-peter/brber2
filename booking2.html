@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #calendar {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        #available-slots {
+            max-width: 900px;
+            margin: 20px auto;
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        #available-slots p {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .fc-non-business {
+            background-color: #e0e0e0;
+            opacity: 0.5;
+        }
+
+        /* Light theme */
+        body.light-theme {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        body.light-theme #calendar {
+            background-color: #f0f0f0;
+        }
+
+        /* Dark theme */
+        body.dark-theme {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        body.dark-theme #calendar {
+            background-color: #2d2d2d;
+        }
+
+        body.dark-theme #available-slots p {
+            background-color: #3a3a3a;
+            color: #ffffff;
+        }
+
+        /* Óceán téma */
+        body.ocean-theme {
+            background-color: #e6f2ff;
+            color: #003366;
+        }
+
+        body.ocean-theme #calendar {
+            background-color: #b3d9ff;
+        }
+
+        body.ocean-theme #available-slots p {
+            background-color: #99ccff;
+            color: #003366;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <select id="theme-selector">
+        <option value="light">Világos mód</option>
+        <option value="dark">Sötét mód</option>
+        <option value="ocean">Óceán mód</option>
+    </select>
+    <select id="treatment-selector">
+        <option value="all">Összes</option>
+        <option value="Hajvágás">Hajvágás</option>
+        <option value="Szakáll igazítás">Szakáll igazítás</option>
+        <option value="Festés">Festés</option>
+    </select>
+    <div id='calendar'></div>
+    <div id='available-slots'></div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var availableSlotsEl = document.getElementById('available-slots');
+            var treatmentSelector = document.getElementById('treatment-selector');
+            var themeSelector = document.getElementById('theme-selector');
+
+            // Set initial theme
+            document.body.classList.add('light-theme');
+
+            themeSelector.addEventListener('change', function () {
+                // Távolítsuk el az összes theme class-t
+                document.body.classList.remove('light-theme', 'dark-theme', 'ocean-theme');
+
+                // Adjuk hozzá a kiválasztott theme class-t
+                switch (this.value) {
+                    case 'dark':
+                        document.body.classList.add('dark-theme');
+                        break;
+                    case 'ocean':
+                        document.body.classList.add('ocean-theme');
+                        break;
+                    default:
+                        document.body.classList.add('light-theme');
+                }
+            });
+
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridDay', // Csak egy nap nézet
+                slotDuration: '00:30:00',
+                selectable: true,
+                events: [
+                    {
+                        title: 'Hajvágás',
+                        start: '2024-12-21T09:30:00',
+                        end: '2024-12-21T10:00:00',
+                        backgroundColor: '#ff0000'
+                    },
+                    {
+                        title: 'Szakáll igazítás',
+                        start: '2024-12-21T12:30:00',
+                        end: '2024-12-21T13:00:00',
+                        backgroundColor: '#ff0000'
+                    },
+                    {
+                        title: 'Festés',
+                        start: '2024-12-21T11:30:00',
+                        end: '2024-12-21T13:00:00',
+                        backgroundColor: '#00ff00'
+                    }
+                ],
+                selectConstraint: {
+                    start: '09:00',
+                    end: '15:00'
+                },
+                select: function (info) {
+                    var treatmentType = prompt('Add meg a kezelés típusát: (pl. Hajvágás)');
+                    if (treatmentType) {
+                        var startTime = new Date(info.startStr);
+                        var isDiscounted = startTime.getHours() < 12;
+                        var endTime = new Date(startTime.getTime() + 60 * 60000); // Egy órás időtartam
+
+                        var title = treatmentType + (isDiscounted ? ' (20% kedvezmény)' : '');
+                        calendar.addEvent({
+                            title: title,
+                            start: startTime,
+                            end: endTime,
+                            backgroundColor: isDiscounted ? '#ff9f89' : ''
+                        });
+
+                        if (isDiscounted) {
+                            alert('A kezelés ára 20% kedvezménnyel lesz számítva.');
+                        }
+                    }
+                    calendar.unselect();
+                },
+                businessHours: [
+                    {
+                        daysOfWeek: [1, 2, 3, 4, 5, 6], // hétfőtől szombatig
+                        startTime: '09:00',
+                        endTime: '12:00',
+                        rendering: 'background', // csak háttér
+                        backgroundColor: '#ff9f89' // kedvezményes szín
+                    },
+                    {
+                        daysOfWeek: [1, 2, 3, 4, 5, 6], // hétfőtől szombatig
+                        startTime: '12:00',
+                        endTime: '15:00',
+                        rendering: 'background', // csak háttér
+                        backgroundColor: '#f0f0f0' // normál szín
+                    }
+                ]
+            });
+
+            calendar.on('eventAdd', function () {
+                listAvailableSlots();
+            });
+
+            function listAvailableSlots() {
+                var startDate = new Date(calendar.view.currentStart);
+                var endDate = new Date(calendar.view.currentEnd);
+                var slots = [];
+
+                for (var date = startDate; date < endDate; date.setMinutes(date.getMinutes() + 30)) {
+                    var slotStart = new Date(date);
+                    var slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000); // Egy órás kezelés
+
+                    // Ellenőrizzük, hogy a slot belefér-e a műszak időkeretébe
+                    if ((slotStart.getHours() >= 9 && slotStart.getHours() < 15) &&
+                        slotStart.getDay() >= 1 && slotStart.getDay() <= 6) {
+                        var isSlotAvailable = true;
+
+                        // Ellenőrizzük, hogy van-e ütközés
+                        calendar.getEvents().forEach(function (event) {
+                            if ((event.start < slotEnd && event.start >= slotStart) ||
+                                (event.end > slotStart && event.end <= slotEnd)) {
+                                isSlotAvailable = false;
+                            }
+                        });
+
+                        if (isSlotAvailable && slotEnd <= endDate) {
+                            slots.push(slotStart);
+                        }
+                    }
+                }
+
+                availableSlotsEl.innerHTML = '';
+                slots.forEach(function (slot) {
+                    var slotStr = slot.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    var isDiscounted = slot.getHours() < 12;
+                    availableSlotsEl.innerHTML += '<p>' + slotStr + (isDiscounted ? ' (20% kedvezmény)' : '') + '</p>';
+                });
+            }
+
+            function filterEvents() {
+                var selectedTreatment = treatmentSelector.value;
+                var allEvents = calendar.getEvents();
+
+                allEvents.forEach(function (event) {
+                    if (selectedTreatment === 'all' || event.title.includes(selectedTreatment)) {
+                        event.setProp('display', '');
+                    } else {
+                        event.setProp('display', 'none');
+                    }
+                });
+            }
+
+            treatmentSelector.addEventListener('change', function () {
+                filterEvents();
+                listAvailableSlots();
+            });
+
+            calendar.render();
+
+            // Listázd a szabad időpontokat a naptár betöltése után
+            listAvailableSlots();
+            calendar.on('datesSet', listAvailableSlots);
+        });
+    </script>
+
+</body>
+
+</html>

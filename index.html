@@ -23,6 +23,21 @@
 	<link rel="stylesheet" href="assets/css/slick.css">
 	<link rel="stylesheet" href="assets/css/nice-select.css">
 	<link rel="stylesheet" href="assets/css/style.css">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: [
+            { title: 'Esemény 1', start: '2024-12-21' }, { title: 'Esemény 2', start: '2024-12-22'}
+            ]
+          });
+          calendar.addEvent({ title: 'Új Időpont', start: '2024-12-21T10:00:00', end: '2024-12-21T12:00:00' });
+          calendar.render();
+        });
+      </script>
+      
 </head>
 <body>
     <!-- ? Preloader Start -->
@@ -64,7 +79,9 @@
                                     </nav>
                                 </div>
                                 <div class="header-right-btn f-right d-none d-lg-block ml-30">
-                                    <a href="from.html" class="btn header-btn">Csatlakozás</a>
+                                   <!-- Módosítsuk ezt a sort -->
+                                    <a href="login.html" class="btn header-btn">Csatlakozás</a>
+
                                 </div>
                             </div>
                         </div>   
@@ -79,6 +96,8 @@
         <!-- Header End -->
     </header>
     <main>
+        
+        
         <!-- Slider Area -->
 <div class="slider-area position-relative fix">
     <div class="slider-active">
@@ -96,10 +115,10 @@
             </div>          
         </div>
         <!-- Single Slider -->
-        <div class="single-slider slider-height d-flex align-items-center">
+        <div class="single-slider slider-height d-flex align-items-center" style="height: 70vh;">
             <div class="container">
                 <div class="row">
-                    <div class="col-xl-8 col-lg-9 col-md-11 col-sm-10">
+                    <div class="col-xl-6 col-lg-7 col-md-9 col-sm-8">
                         <div class="hero__caption">
                             <span data-animation="fadeInUp" data-delay="0.2s">Patrick Potterrel</span>
                             <h1 data-animation="fadeInUp" data-delay="0.5s">A mi frizuráink elegánssá teszik megjelenését</h1>
@@ -109,12 +128,11 @@
             </div>          
         </div>
     </div>
-
     <!-- Arrow -->
-    <div class="thumb-content-box">
+    <div class="thumb-content-box" onclick="window.location.href='booking2.html';" style="cursor: pointer;">
         <div class="thumb-content">
             <h3>Foglaljon időpontot most</h3>
-            <a href="#"> <i class="fas fa-long-arrow-alt-right"></i></a>
+            <a href="booking2.html"> <i class="fas fa-long-arrow-alt-right"></i></a>
         </div>
     </div>
 </div>
@@ -212,45 +230,7 @@
             </div>
         </div>
         <!-- Team End -->
-        <!-- Best Pricing Area Start -->
-        <div class="best-pricing section-padding2 position-relative">
-            <div class="container">
-                <div class="row justify-content-end">
-                    <div class="col-xl-7 col-lg-7">
-                        <div class="section-tittle mb-50">
-                            <span>Legkedvezőbb Áraink</span>
-<h2>A legjobb árakat kínáljuk<br> a városban!</h2>
-                        </div>
-                        <!-- Pricing  -->
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6">
-                                <div class="pricing-list">
-                                    <ul>
-                                        <li>Vágás + Frizura. . . . . . . . . . . . . . . . . . . . <span>18900 Ft</span></li>
-                                <li>Vágás + Frizura + Festés. . . . . . . . . . . . . <span>30000 Ft</span></li>
-                                <li>Vágás + Frizura + Színezés. . . . . . . . . . <span>30000 Ft</span></li>
-                                <li>Vágás. . . . . . . . . . . . . . . . . . . . . . . . . . . <span>7500 Ft</span></li>
-                                <li>Borotválás. . . . . . . . . . . . . . . . . . . . . . . <span>19500 Ft</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6">
-                                <div class="pricing-list">
-                                    <ul>
-                                        <li>Szakállvágás. . . . . . . . . . . . . . . . . . . . . <span>19500 Ft</span></li>
-                                        <li>Vágás + szakállvágás. . . . . . . . . . . . . . <span>19500 Ft</span></li>
-                                        <li>Vágás + borotválás. . . . . . . . . . . . . . . . <span>18900 Ft</span></li>
-                                        <li>Tisztítás. . . . . . . . . . . . . . . . . . . . . . . . . <span>30000 Ft</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-           
-        </div>
-        <!-- Best Pricing Area End -->
+       
         <!--? Gallery Area Start -->
         <div class="gallery-area section-padding30">
             <div class="container">
@@ -443,3 +423,9 @@
     
     </body>
 </html>
+
+.slider-height {
+    height: 70vh; /* Például 70%-ra csökkentve a teljes magasságnak */
+    /* vagy */
+    min-height: 500px; /* Fix magasság */
+}

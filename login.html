@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bejelentkezés</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#login">Bejelentkezés</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#register">Regisztráció</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <!-- Bejelentkezés form -->
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label>Email cím</label>
+                                <input type="email" id="loginEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Jelszó</label>
+                                <input type="password" id="loginPassword" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Bejelentkezés</button>
+                        </form>
+
+                        <!-- Regisztráció form -->
+                        <form id="registerForm" style="display: none;">
+                            <div class="form-group">
+                                <label>Teljes név</label>
+                                <input type="text" id="registerFullname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email cím</label>
+                                <input type="email" id="registerEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Jelszó</label>
+                                <input type="password" id="registerPassword" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Jelszó megerősítése</label>
+                                <input type="password" id="registerConfirmPassword" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Regisztráció</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.nav-link').click(function(e) {
+                e.preventDefault();
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+                
+                if($(this).attr('href') === '#register') {
+                    $('#loginForm').hide();
+                    $('#registerForm').show();
+                } else {
+                    $('#registerForm').hide();
+                    $('#loginForm').show();
+                }
+            });
+
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: 'http://localhost:5000/login',  // Teljes URL a 5000-es portra
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        email: $('#loginEmail').val(),
+                        password: $('#loginPassword').val()
+                    }),
+                    success: function(response) {
+                        alert(response.message);
+                        window.location.href = 'http://localhost:5000/dashboard';
+                    },
+                    error: function(xhr) {
+                        var errorMessage = xhr.responseJSON ? 
+                            xhr.responseJSON.message || 'Hiba történt' : 
+                            'Hiba történt';
+                        alert(errorMessage);
+                    }
+                });
+            });
+
+            $('#registerForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: 'http://localhost:5000/register',  // Teljes URL a 5000-es portra
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        fullname: $('#registerFullname').val(),
+                        email: $('#registerEmail').val(),
+                        password: $('#registerPassword').val(),
+                        confirm_password: $('#registerConfirmPassword').val()
+                    }),
+                    success: function(response) {
+                        alert(response.message);
+                        $('#registerForm').hide();
+                        $('#loginForm').show();
+                        $('.nav-link[href="#login"]').addClass('active');
+                        $('.nav-link[href="#register"]').removeClass('active');
+                    },
+                    error: function(xhr) {
+                        var errorMessage = xhr.responseJSON ? 
+                            xhr.responseJSON.message || 'Hiba történt' : 
+                            'Hiba történt';
+                        alert(errorMessage);
+                    }
+                });
+            });        });
+    </script>
+</body>
+</html>
